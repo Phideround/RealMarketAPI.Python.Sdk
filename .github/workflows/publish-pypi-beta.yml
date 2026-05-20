@@ -1,0 +1,67 @@
+name: Publish PyPI Beta
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "py-sdk-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build twine
+
+      - name: Validate beta version and tag alignment
+        shell: bash
+        run: |
+          VERSION=$(python - <<'PY'
+from pathlib import Path
+import re
+
+content = Path('pyproject.toml').read_text(encoding='utf-8')
+match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
+if not match:
+    raise SystemExit('version not found in pyproject.toml')
+print(match.group(1))
+PY
+)
+          echo "Project version: ${VERSION}"
+
+          if [[ "${VERSION}" != *"b"* ]]; then
+            echo "pyproject version must include beta marker (e.g. 0.1.0b1)."
+            exit 1
+          fi
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG_VERSION="${GITHUB_REF_NAME#py-sdk-v}"
+            if [[ "${TAG_VERSION}" != "${VERSION}" ]]; then
+              echo "Tag/version mismatch. Tag=${TAG_VERSION}, pyproject=${VERSION}"
+              exit 1
+            fi
+          fi
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Validate distributions
+        run: twine check dist/*
+
+      - name: Publish to PyPI beta channel
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload --non-interactive dist/*
