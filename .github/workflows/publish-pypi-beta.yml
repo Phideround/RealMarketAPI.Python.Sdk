@@ -29,16 +29,16 @@ jobs:
         shell: bash
         run: |
           VERSION=$(python - <<'PY'
-from pathlib import Path
-import re
+          from pathlib import Path
+          import re
 
-content = Path('pyproject.toml').read_text(encoding='utf-8')
-match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
-if not match:
-    raise SystemExit('version not found in pyproject.toml')
-print(match.group(1))
-PY
-)
+          content = Path('pyproject.toml').read_text(encoding='utf-8')
+          match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
+          if not match:
+            raise SystemExit('version not found in pyproject.toml')
+          print(match.group(1))
+          PY
+          )
           echo "Project version: ${VERSION}"
 
           if [[ "${VERSION}" != *"b"* ]]; then
