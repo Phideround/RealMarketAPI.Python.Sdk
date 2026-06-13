@@ -176,6 +176,46 @@ Example response payload:
 }
 ```
 
+### `create_alert(symbol_code, time_frame, rule_type, threshold, cooldown_seconds=300, channels=None)`
+
+Creates a new alert rule.
+
+### `get_alerts(status=None)`
+
+Returns alert rules, optionally filtered by status.
+
+### `delete_alert(alert_id)`
+
+Deletes an alert rule by id.
+
+### `query_screener(time_frame, trend=None, min_rsi=None, max_volatility_pct=None, min_liquidity_score=None, sort_field="SignalScore", sort_direction="Desc", size=25)`
+
+Queries symbols by screener filters.
+
+### `get_strategy_signal(symbol_code, time_frame)`
+
+Returns composite strategy signal payload.
+
+### `create_watchlist(name, tags=None, notes=None)`
+
+Creates a cloud watchlist.
+
+### `get_watchlists()`
+
+Returns watchlist collection.
+
+### `add_watchlist_item(watchlist_id, symbol_code, order=0)`
+
+Adds a symbol to a watchlist.
+
+### `remove_watchlist_item(watchlist_id, symbol_code)`
+
+Removes a symbol from a watchlist.
+
+### `get_market_calendar(date=None, timezone="UTC")`
+
+Returns sessions and high-impact market events.
+
 ## WebSocket streaming methods
 
 The WebSocket client exposes async generators and reconnects after transient failures.
@@ -233,6 +273,7 @@ Example message payload:
 ## Beta scope and compatibility
 
 - Current REST coverage: price, candles, history, symbols, SMA.
+- Expanded REST coverage: alerts, screener, strategy signal, watchlist, and market calendar.
 - Current WebSocket coverage: price and candles.
 - This package is beta and may receive additive changes before stable `1.0`.
 
