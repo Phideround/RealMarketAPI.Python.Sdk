@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(python -m build:*)",
+      "Bash(python -m pip install -e:*)",
+      "Bash(python -m twine check:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git tag:*)",
+      "Bash(twine upload:*)",
+      "Bash(python -m twine upload:*)"
+    ],
+    "deny": [
+      "Read(**/.git/config)"
+    ]
+  }
+}
