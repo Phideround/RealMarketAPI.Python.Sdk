@@ -2,7 +2,7 @@
 
 All notable changes to `realmarketapi-python-sdk-beta` are listed here.
 
-## Unreleased
+## 0.1.0b3 (2026-11-22)
 
 REST and WebSocket coverage now matches the .NET SDK (`RealMarketAPI.Sdk`), except the MCP client.
 
