@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 from dataclasses import dataclass
-from typing import Any, AsyncIterator, Dict
+from typing import Any, AsyncIterator, Dict, List
 from urllib.parse import urlencode, urlparse
 
 import websockets
@@ -23,7 +23,21 @@ class RealMarketApiWebSocket:
         async for item in self._stream("candles", {"symbolCode": symbol_code, "timeFrame": time_frame}):
             yield item
 
-    async def _stream(self, endpoint: str, params: Dict[str, str]) -> AsyncIterator[Dict[str, Any]]:
+    async def stream_order_flow_imbalance(self, symbol_code: str, time_frame: str) -> AsyncIterator[Dict[str, Any]]:
+        params = {"symbolCode": symbol_code, "timeFrame": time_frame}
+        async for item in self._stream("orderflow/imbalance", params):
+            yield item
+
+    async def stream_multi_timeframe(self, symbol_code: str) -> AsyncIterator[Dict[str, Any]]:
+        async for item in self._stream("multi-timeframe", {"symbolCode": symbol_code}):
+            yield item
+
+    async def stream_market(self) -> AsyncIterator[List[Dict[str, Any]]]:
+        """Each message is a snapshot list covering every symbol on the key's plan."""
+        async for item in self._stream("market", {}):
+            yield item
+
+    async def _stream(self, endpoint: str, params: Dict[str, str]) -> AsyncIterator[Any]:
         closed_by_user = False
 
         while not closed_by_user:
